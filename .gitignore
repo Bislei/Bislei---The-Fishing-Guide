@@ -1,0 +1,25 @@
+# Android build files
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local config
+local.properties
+
+# Google services
+google-services.json
+*.keystore
+*.jks
+
+# API Keys / Custom env files
+.env
+apikeys.properties
+
+# IDE & system files
+.idea/
+*.iml
+.DS_Store
+*.log
+
