@@ -44,7 +44,11 @@ fun SplashScreen(
 //                modifier = Modifier.size(100.dp)
 //            )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Bislei - The Fishing Guide 🎣", style = MaterialTheme.typography.headlineSmall)
+            Column (verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+            Text(text = "Bislei", style = MaterialTheme.typography.headlineSmall)
+            Text(text = "The Fishing Guide \uD83C\uDFA3", style = MaterialTheme.typography.headlineSmall)
+
+            }
         }
     }
 }

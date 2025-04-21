@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.compose.material3.Text
 import com.kashmir.bislei.screens.HomeScreen
 import com.kashmir.bislei.screens.LoginScreen
 import com.kashmir.bislei.screens.RegisterScreen
@@ -38,7 +37,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Screens.Register.route) {
             RegisterScreen(
                 onRegisterSuccess = {
-                    navController.navigate(Screens.Home.route) {
+                    navController.navigate(Screens.Login.route) {
                         popUpTo(Screens.Register.route) { inclusive = true }
                     }
                 },
@@ -49,7 +48,13 @@ fun NavigationGraph(navController: NavHostController) {
         }
 
         composable(Screens.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onLogout = {
+                    navController.navigate(Screens.Login.route) {
+                        popUpTo(Screens.Home.route) { inclusive = true } // Clear Home from backstack
+                    }
+                }
+            )
         }
     }
 }
