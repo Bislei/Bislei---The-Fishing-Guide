@@ -77,18 +77,4 @@ class AuthViewModel : ViewModel() {
         }
         isLoading = false
     }
-
-//    suspend fun sendPasswordResetEmail(email: String): String {
-//        return try {
-//            auth.sendPasswordResetEmail(email).await()
-//            "Reset link sent to $email"
-//        } catch (e: Exception) {
-//            e.localizedMessage ?: "Failed to send reset email"
-//        }
-//    }
-
-//    fun logoutUser() {
-//        auth.signOut()
-//        isLoggedIn = false
-//    }
 }
