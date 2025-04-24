@@ -19,8 +19,7 @@ import com.kashmir.bislei.R
 @Composable
 fun SplashScreen(navController: NavController, isUserLoggedIn: Boolean) {
 
-    // Optional: Logging navigation decision
-    Log.d("SplashScreen", "User logged in: $isUserLoggedIn")
+
 
     LaunchedEffect(Unit) {
         delay(3000) // Optional: Add splash delay
