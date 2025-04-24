@@ -18,11 +18,13 @@ import androidx.compose.material.icons.filled.VisibilityOff
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onForgotPassword: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    var infoMessage by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -31,8 +33,7 @@ fun LoginScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
-            modifier = Modifier
-                .padding(24.dp),
+            modifier = Modifier.padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -67,6 +68,7 @@ fun LoginScreen(
                             errorMessage = "Please fill all the fields"
                         } else {
                             errorMessage = ""
+                            infoMessage = ""
                             authViewModel.loginUser(email, password)
                         }
                     }
@@ -77,10 +79,34 @@ fun LoginScreen(
                 Text(if (authViewModel.isLoading) "Logging in..." else "Login")
             }
 
+            // Call the onForgotPassword function when the "Forgot Password?" button is clicked
+            TextButton(
+                onClick = {
+                    if (email.isEmpty()) {
+                        errorMessage = "Please enter your email to reset password"
+                    } else {
+                        coroutineScope.launch {
+                            authViewModel.sendPasswordReset(email)
+                            infoMessage = "Reset link sent to $email"
+                            errorMessage = ""
+                        }
+                    }
+                    onForgotPassword() // Trigger the onForgotPassword callback
+                }
+            ) {
+                Text("Forgot Password?")
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Error Message
             if (errorMessage.isNotEmpty()) {
                 Text(text = "Error: $errorMessage", color = MaterialTheme.colorScheme.error)
+            }
+
+            // Success Info Message
+            if (infoMessage.isNotEmpty()) {
+                Text(text = infoMessage, color = MaterialTheme.colorScheme.primary)
             }
 
             if (authViewModel.errorMessage.isNotEmpty()) {

@@ -122,7 +122,7 @@ fun RegisterScreen(
 
                             else -> {
                                 localErrorMessage = ""
-                                authViewModel.registerUser(email, password)
+                                authViewModel.registerUserWithDetails(name, phone, email, password)
                             }
                         }
 

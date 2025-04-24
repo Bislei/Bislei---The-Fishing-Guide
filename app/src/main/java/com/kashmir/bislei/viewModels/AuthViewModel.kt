@@ -4,38 +4,50 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
 
     var isLoggedIn by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
     var isLoading by mutableStateOf(false)
 
-    // Register User and Send Email Verification
-    suspend fun registerUser(email: String, password: String) {
+    // Register User + Send Verification + Save Data
+    suspend fun registerUserWithDetails(name: String, phone: String, email: String, password: String) {
         isLoading = true
         try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val user = result.user
 
             if (user != null) {
+                // Send email verification
                 user.sendEmailVerification().await()
+
+                // Save user info to FireStore
+                val userMap = hashMapOf(
+                    "uid" to user.uid,
+                    "name" to name,
+                    "phone" to phone,
+                    "email" to email
+                )
+                firestore.collection("users").document(user.uid).set(userMap).await()
+
                 errorMessage = "Verification email sent to $email. Please verify your email."
-                isLoggedIn = false // Not logged in until email is verified
+                isLoggedIn = false
             } else {
                 errorMessage = "Registration failed. Try again."
             }
         } catch (e: FirebaseAuthUserCollisionException) {
-            errorMessage = "Email is already registered. Please login or use a different email."
+            errorMessage = "Email already registered. Please login or use a different email."
         } catch (e: Exception) {
             errorMessage = e.localizedMessage ?: "Something went wrong"
         }
         isLoading = false
     }
 
-    // Login User and Check Email Verification Status
     suspend fun loginUser(email: String, password: String) {
         isLoading = true
         try {
@@ -55,9 +67,28 @@ class AuthViewModel : ViewModel() {
         isLoading = false
     }
 
-    // Optional: Logout function
-    fun logoutUser() {
-        auth.signOut()
-        isLoggedIn = false
+    suspend fun sendPasswordReset(email: String) {
+        isLoading = true
+        try {
+            auth.sendPasswordResetEmail(email).await()
+            errorMessage = "Password reset email sent to $email"
+        } catch (e: Exception) {
+            errorMessage = e.localizedMessage ?: "Failed to send reset email"
+        }
+        isLoading = false
     }
+
+//    suspend fun sendPasswordResetEmail(email: String): String {
+//        return try {
+//            auth.sendPasswordResetEmail(email).await()
+//            "Reset link sent to $email"
+//        } catch (e: Exception) {
+//            e.localizedMessage ?: "Failed to send reset email"
+//        }
+//    }
+
+//    fun logoutUser() {
+//        auth.signOut()
+//        isLoggedIn = false
+//    }
 }

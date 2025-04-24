@@ -4,22 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.kashmir.bislei.screens.HomeScreen
-import com.kashmir.bislei.screens.LoginScreen
-import com.kashmir.bislei.screens.RegisterScreen
-import com.kashmir.bislei.screens.SplashScreen
+import com.kashmir.bislei.screens.*
 
 @Composable
-fun NavigationGraph(navController: NavHostController) {
+fun NavigationGraph(navController: NavHostController, isUserLoggedIn: Boolean) {
     NavHost(navController = navController, startDestination = Screens.Splash.route) {
 
         composable(Screens.Splash.route) {
             SplashScreen(
                 navController = navController,
-                isUserLoggedIn = false // Replace with real login check from ViewModel
+                isUserLoggedIn = isUserLoggedIn
             )
         }
-
 
         composable(Screens.Login.route) {
             LoginScreen(
@@ -30,6 +26,9 @@ fun NavigationGraph(navController: NavHostController) {
                 },
                 onRegisterClick = {
                     navController.navigate(Screens.Register.route)
+                },
+                onForgotPassword = {
+                    navController.navigate(Screens.ResetPassword.route)
                 }
             )
         }
@@ -51,8 +50,16 @@ fun NavigationGraph(navController: NavHostController) {
             HomeScreen(
                 onLogout = {
                     navController.navigate(Screens.Login.route) {
-                        popUpTo(Screens.Home.route) { inclusive = true } // Clear Home from backstack
+                        popUpTo(Screens.Home.route) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(Screens.ResetPassword.route) {
+            ResetPasswordScreen(
+                onBackToLogin = {
+                    navController.popBackStack()
                 }
             )
         }
