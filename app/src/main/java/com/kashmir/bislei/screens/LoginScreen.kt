@@ -1,7 +1,7 @@
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Alignment
@@ -15,7 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.res.painterResource
-import com.kashmir.bislei.R // Make sure this matches your app's package
+import com.kashmir.bislei.R
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun LoginScreen(
@@ -36,41 +37,49 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf("") }
     var infoMessage by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
     val coroutineScope = rememberCoroutineScope()
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val scrollState = rememberScrollState() // Scroll state to allow scrolling
+    val scrollState = rememberScrollState()
 
-    Box(
-        contentAlignment = Alignment.Center,
+    Box(contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        // Make the entire content scrollable
+        // Background SVG image
+        Image(
+            painter = painterResource(id = R.drawable.colored_skyblue_focus),
+            contentDescription = "Background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 8.dp)
-                .verticalScroll(scrollState) // Allow scrolling when keyboard is visible
-                .imePadding(), // Adjust padding when the keyboard appears
+                .verticalScroll(scrollState)
+                .imePadding(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Logo Image
-            Image(
-                painter = painterResource(id = R.drawable.ini),
-                contentDescription = "App Logo",
-                modifier = Modifier
-                    .size(200.dp)  // Reduced logo size
-                    .clip(RoundedCornerShape(16.dp))
-            )
-
-            Spacer(modifier = Modifier.height(8.dp)) // Reduced gap between logo and text
+//            Image(
+//                painter = painterResource(id = R.drawable.ini),
+//                contentDescription = "App Logo",
+//                modifier = Modifier
+//                    .size(500.dp)
+//                    .clip(RoundedCornerShape(16.dp))
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
 
             Text(text = "Login", style = MaterialTheme.typography.headlineLarge)
 
-            Spacer(modifier = Modifier.height(12.dp)) // Reduced gap before the fields
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Email Input Field
             OutlinedTextField(
@@ -88,7 +97,7 @@ fun LoginScreen(
                     .focusRequester(emailFocusRequester)
             )
 
-            Spacer(modifier = Modifier.height(8.dp)) // Reduced gap between email and password field
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Password Input Field
             OutlinedTextField(
@@ -107,7 +116,7 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        keyboardController?.hide() // Hide keyboard when done
+                        keyboardController?.hide()
                     }
                 ),
                 modifier = Modifier
@@ -116,7 +125,7 @@ fun LoginScreen(
                     .focusRequester(passwordFocusRequester)
             )
 
-            Spacer(modifier = Modifier.height(12.dp)) // Reduced gap before the login button
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Login Button
             Button(
@@ -155,7 +164,7 @@ fun LoginScreen(
                 Text("Forgot Password?")
             }
 
-            Spacer(modifier = Modifier.height(12.dp)) // Reduced gap before any messages
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Error Message
             if (errorMessage.isNotEmpty()) {
@@ -175,14 +184,14 @@ fun LoginScreen(
                 )
             }
 
-            // After successful login, proceed to the next screen
+            // After successful login
             if (authViewModel.isLoggedIn) {
                 LaunchedEffect(Unit) {
                     onLoginSuccess()
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp)) // Reduced space at the bottom
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Register Section
             Box(
@@ -194,8 +203,7 @@ fun LoginScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text("Don't have an account?")
-                    Spacer(modifier = Modifier.width(4.dp)) // Small gap
-
+                    Spacer(modifier = Modifier.width(4.dp))
                     TextButton(
                         contentPadding = PaddingValues(0.dp),
                         onClick = onRegisterClick

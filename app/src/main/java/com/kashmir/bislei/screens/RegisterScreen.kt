@@ -51,7 +51,7 @@ fun RegisterScreen(
     ) {
         // Background image
         Image(
-            painter = painterResource(id = R.drawable.bislei_bg),
+            painter = painterResource(id = R.drawable.colored_skyblue_focus),
             contentDescription = "Fishing Background",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
