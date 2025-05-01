@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.androidx.espresso.core)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.webkit)
+    implementation(libs.engage.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -78,9 +80,12 @@ dependencies {
     // Icon Dependency
     implementation (libs.androidx.material.icons.extended)
 
-
     implementation(libs.androidx.animation) // use a stable version
 
+
+    //for Google map implementation in the app
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.maps.android:maps-compose:2.9.1")
 
 }
 

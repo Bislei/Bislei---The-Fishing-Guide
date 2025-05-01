@@ -23,7 +23,7 @@ fun SplashScreen(navController: NavController, isUserLoggedIn: Boolean) {
 
 
     LaunchedEffect(Unit) {
-        delay(1000) // Optional: Add splash delay
+        delay(500) // Optional: Add splash delay
         if (isUserLoggedIn) {
             navController.navigate(Screens.Home.route) {
                 popUpTo(Screens.Splash.route) { inclusive = true }

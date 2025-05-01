@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+
 import com.kashmir.bislei.screens.*
 
 @Composable
@@ -53,9 +54,18 @@ fun NavigationGraph(navController: NavHostController, isUserLoggedIn: Boolean) {
                     navController.navigate(Screens.Login.route) {
                         popUpTo(Screens.Home.route) { inclusive = true }
                     }
+                },
+                onBackClick = {
+                    // Define the back navigation action
+                    navController.popBackStack()
+                },
+                onProfileClick = {
+                    // Navigate to the Profile screen or perform another action
+                    navController.navigate(Screens.Profile.route)
                 }
             )
         }
+
 
         composable(Screens.ResetPassword.route) {
             ResetPasswordScreen(

@@ -6,4 +6,7 @@ sealed class Screens(val route: String) {
     object Register : Screens("register_screen")
     object Home : Screens("home_screen")
     object ResetPassword : Screens("reset_password_screen")
+    object Profile : Screens("profile") // Ensure this exists
+
+
 }
