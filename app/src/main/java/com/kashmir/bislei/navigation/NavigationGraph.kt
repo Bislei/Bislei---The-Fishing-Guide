@@ -5,13 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
-import com.kashmir.bislei.screens.*
+import com.kashmir.bislei.screens.HomeScreen
+import com.kashmir.bislei.screens.RegisterScreen
+import com.kashmir.bislei.screens.ResetPasswordScreen
+import com.kashmir.bislei.screens.SplashScreen
 
 @Composable
 fun NavigationGraph(navController: NavHostController, isUserLoggedIn: Boolean) {
     NavHost(navController = navController, startDestination = Screens.Splash.route) {
-
         composable(Screens.Splash.route) {
             SplashScreen(
                 navController = navController,
@@ -56,16 +57,13 @@ fun NavigationGraph(navController: NavHostController, isUserLoggedIn: Boolean) {
                     }
                 },
                 onBackClick = {
-                    // Define the back navigation action
                     navController.popBackStack()
                 },
                 onProfileClick = {
-                    // Navigate to the Profile screen or perform another action
-                    navController.navigate(Screens.Profile.route)
+                    // Handled within HomeScreen's nested navigation
                 }
             )
         }
-
 
         composable(Screens.ResetPassword.route) {
             ResetPasswordScreen(

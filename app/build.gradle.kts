@@ -83,8 +83,14 @@ dependencies {
     implementation(libs.androidx.animation) // use a stable version
 
 
+// Lottie dependency
+    implementation ("com.airbnb.android:lottie-compose:6.6.6")
+
+//Splash Screen Implementation
+    implementation ("androidx.core:core-splashscreen:1.0.1")
+
     //for Google map implementation in the app
-    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
     implementation ("com.google.maps.android:maps-compose:2.9.1")
 
 }
