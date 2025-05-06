@@ -29,7 +29,6 @@ android {
 
         // Inject the MAPS_API_KEY into the manifest
         manifestPlaceholders["MAPS_API_KEY"] = apiKeyProperties.getProperty("MAPS_API_KEY")
-
     }
 
     configurations.all {
@@ -63,6 +62,7 @@ android {
 }
 
 dependencies {
+    // Core & Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -71,24 +71,23 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.material3:material3:1.2.0")
+
+    // Firebase
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
-    implementation(libs.androidx.room.runtime.android)
-    implementation(libs.play.services.location)
+
+    // Google Maps & Location
     implementation(libs.play.services.maps)
-
-    // Compose Runtime & LiveData
-    implementation("androidx.compose.runtime:runtime:1.7.8")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
-
-    // Maps Compose
+    implementation(libs.play.services.location)
+    implementation(libs.maps.compose) // Latest maps-compose
     implementation("com.google.maps.android:maps-compose:6.4.1")
 
     // Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 
-    // Coil (for image loading)
+    // Coil (Image Loading)
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Navigation
@@ -97,6 +96,21 @@ dependencies {
     // Icons & Animations
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.animation)
+    implementation("androidx.compose.runtime:runtime:1.7.8")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+
+    // Room
+    implementation(libs.androidx.room.runtime.android)
+
+    // Extra Features
+    implementation(libs.androidx.webkit)
+    implementation(libs.engage.core)
+
+    // Lottie Animation
+    implementation("com.airbnb.android:lottie-compose:6.6.6")
+
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Testing
     testImplementation(libs.junit)
@@ -106,6 +120,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    implementation ("androidx.compose.material3:material3:1.2.0")
 }

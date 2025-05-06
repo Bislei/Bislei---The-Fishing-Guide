@@ -2,13 +2,26 @@ package com.kashmir.bislei.screens.authScreens
 
 import android.util.Patterns
 import androidx.compose.runtime.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kashmir.bislei.R
 import com.kashmir.bislei.viewModels.AuthViewModel
 import kotlinx.coroutines.launch
 
@@ -26,54 +39,124 @@ fun RegisterScreen(
     val coroutineScope = rememberCoroutineScope()
     var localErrorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    val phoneFocusRequester = remember { FocusRequester() }
+    val emailFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
+    val confirmPasswordFocusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
-        contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
+        // Background image
+        Image(
+            painter = painterResource(id = R.drawable.colored_skyblue_focus),
+            contentDescription = "Fishing Background",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Optional overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+        )
+
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Register", style = MaterialTheme.typography.headlineLarge)
+            Text(
+                text = "Register",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(modifier = Modifier.height(20.dp))
 
-            OutlinedTextField(value = name,
+            OutlinedTextField(
+                value = name,
                 onValueChange = { name = it },
-                label = { Text("Full Name") }
+                label = { Text("Full Name") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { phoneFocusRequester.requestFocus() }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(8.dp)
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(value = phone,
+            OutlinedTextField(
+                value = phone,
                 onValueChange = { phone = it },
-                label = { Text("Phone") }
+                label = { Text("Phone") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { emailFocusRequester.requestFocus() }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .focusRequester(phoneFocusRequester)
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") }
+                label = { Text("Email") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .focusRequester(emailFocusRequester)
             )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") }
+                label = { Text("Password") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .focusRequester(passwordFocusRequester)
             )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") }
+                label = { Text("Confirm Password") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .focusRequester(confirmPasswordFocusRequester)
             )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Show local error messages
             if (localErrorMessage.isNotEmpty()) {
                 Text(
                     text = localErrorMessage,
@@ -82,7 +165,6 @@ fun RegisterScreen(
                 )
             }
 
-            // Show Firebase error message
             if (authViewModel.errorMessage.isNotEmpty()) {
                 Text(
                     text = "Error: ${authViewModel.errorMessage}",
@@ -91,14 +173,12 @@ fun RegisterScreen(
                 )
             }
 
-            // Register Button with loader
             Button(
                 onClick = {
                     coroutineScope.launch {
                         localErrorMessage = ""
                         isLoading = true
 
-                        // Basic Validation
                         when {
                             name.isBlank() || phone.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank() -> {
                                 localErrorMessage = "Please fill all the fields"
@@ -129,7 +209,9 @@ fun RegisterScreen(
                         isLoading = false
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
                 enabled = !isLoading
             ) {
                 if (isLoading) {
@@ -140,12 +222,11 @@ fun RegisterScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
-                Text("Register")
+                Text("Register", modifier = Modifier.padding(5.dp), fontSize = 18.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Success state
             if (authViewModel.errorMessage.contains("Please verify your email", ignoreCase = true)) {
                 Text(
                     text = "Registration successful! Please verify your email.",
@@ -157,9 +238,17 @@ fun RegisterScreen(
                 onRegisterSuccess()
             }
 
-            //Back to login
-            TextButton(onClick = onLoginClick) {
-                Text("Already have an account? Login here")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Already have an account?")
+                TextButton(
+                    onClick = onLoginClick,
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(" Login here", style = MaterialTheme.typography.bodyLarge)
+                }
             }
         }
     }

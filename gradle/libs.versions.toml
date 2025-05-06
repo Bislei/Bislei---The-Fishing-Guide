@@ -21,6 +21,8 @@ roomRuntimeAndroid = "2.7.1"
 firebaseStorage = "21.0.1"
 playServicesLocation = "21.3.0"
 mediationTestSuite = "3.0.0"
+webkit = "1.13.0"
+engageCore = "1.5.8"
 
 [libraries]
 androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
@@ -50,6 +52,8 @@ androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 mediation-test-suite = { group = "com.google.android.ads", name = "mediation-test-suite", version.ref = "mediationTestSuite" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
+engage-core = { group = "com.google.android.engage", name = "engage-core", version.ref = "engageCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
