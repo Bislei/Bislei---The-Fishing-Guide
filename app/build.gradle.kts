@@ -1,8 +1,17 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+}
+
+// Load the API key from apikey.properties
+val apiKeyPropertiesFile = rootProject.file("apikey.properties")
+val apiKeyProperties = Properties().apply {
+    load(FileInputStream(apiKeyPropertiesFile))
 }
 
 android {
@@ -17,6 +26,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Inject the MAPS_API_KEY into the manifest
+        manifestPlaceholders["MAPS_API_KEY"] = apiKeyProperties.getProperty("MAPS_API_KEY")
+
     }
 
     configurations.all {
@@ -95,5 +108,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation ("androidx.compose.material3:material3:1.2.0")
-
 }
