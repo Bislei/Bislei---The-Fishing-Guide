@@ -25,8 +25,6 @@ android {
         }
     }
 
-
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -36,20 +34,22 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,8 +59,33 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
-    implementation(libs.androidx.espresso.core)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.androidx.room.runtime.android)
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+
+    // Compose Runtime & LiveData
+    implementation("androidx.compose.runtime:runtime:1.7.8")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+
+    // Maps Compose
+    implementation("com.google.maps.android:maps-compose:6.4.1")
+
+    // Accompanist Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
+
+    // Coil (for image loading)
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // Icons & Animations
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.animation)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,15 +94,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
-    // Navigation Dependency
-    implementation(libs.androidx.navigation.compose)
-
-    // Icon Dependency
-    implementation (libs.androidx.material.icons.extended)
-
-
-    implementation(libs.androidx.animation) // use a stable version
-
+    implementation ("androidx.compose.material3:material3:1.2.0")
 
 }

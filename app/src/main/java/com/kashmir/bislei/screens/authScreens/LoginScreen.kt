@@ -1,4 +1,4 @@
-package com.kashmir.bislei.screens
+package com.kashmir.bislei.screens.authScreens
 
 import androidx.compose.runtime.*
 import androidx.compose.material3.*

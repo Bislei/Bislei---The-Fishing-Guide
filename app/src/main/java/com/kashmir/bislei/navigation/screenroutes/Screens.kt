@@ -1,4 +1,4 @@
-package com.kashmir.bislei.navigation
+package com.kashmir.bislei.navigation.screenroutes
 
 sealed class Screens(val route: String) {
     object Splash : Screens("splash_screen")

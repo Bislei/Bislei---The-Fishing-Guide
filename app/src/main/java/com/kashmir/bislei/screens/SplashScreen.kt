@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.kashmir.bislei.navigation.Screens
+import com.kashmir.bislei.navigation.screenroutes.Screens
 import kotlinx.coroutines.delay
 
 @Composable

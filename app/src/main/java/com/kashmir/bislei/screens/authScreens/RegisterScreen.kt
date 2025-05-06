@@ -1,4 +1,4 @@
-package com.kashmir.bislei.screens
+package com.kashmir.bislei.screens.authScreens
 
 import android.util.Patterns
 import androidx.compose.runtime.*
