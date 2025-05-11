@@ -20,7 +20,8 @@ import com.kashmir.bislei.R
 @Composable
 fun SplashScreen(navController: NavController, isUserLoggedIn: Boolean) {
 
-
+    // Set a custom background color for both light and dark modes
+    val backgroundColor = MaterialTheme.colorScheme.surface // This adapts based on the theme
 
     LaunchedEffect(Unit) {
         delay(1000) // Optional: Add splash delay
@@ -38,20 +39,24 @@ fun SplashScreen(navController: NavController, isUserLoggedIn: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(backgroundColor), // Set background color here
         contentAlignment = Alignment.Center
-    ) { Image(
-        painter = painterResource(id = R.drawable.colored_skyblue_focus),
-        contentDescription = "Fishing Background",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(),
-    )
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.colored_skyblue_focus),
+            contentDescription = "Fishing Background",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo", Modifier.size(500.dp))
+//            Image(
+//                painter = painterResource(id = R.drawable.logo),
+//                contentDescription = "Logo",
+//                Modifier.size(500.dp)
+//            )
         }
     }
 }

@@ -31,6 +31,8 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onLoginClick: () -> Unit
 ) {
+    val primaryGreen = Color(0xFF2E8B57)
+
     var name by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -57,11 +59,11 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Optional overlay
+        // Transparent overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.3f))
+                .background(Color.Black.copy(alpha = 0f))
         )
 
         Column(
@@ -74,9 +76,16 @@ fun RegisterScreen(
             Text(
                 text = "Register",
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = primaryGreen
             )
             Spacer(modifier = Modifier.height(20.dp))
+
+            val textFieldColors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = primaryGreen,
+                unfocusedBorderColor = primaryGreen,
+                focusedLabelColor = primaryGreen,
+                cursorColor = primaryGreen
+            )
 
             OutlinedTextField(
                 value = name,
@@ -88,7 +97,8 @@ fun RegisterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -103,7 +113,8 @@ fun RegisterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .focusRequester(phoneFocusRequester)
+                    .focusRequester(phoneFocusRequester),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -118,7 +129,8 @@ fun RegisterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .focusRequester(emailFocusRequester)
+                    .focusRequester(emailFocusRequester),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -133,7 +145,8 @@ fun RegisterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .focusRequester(passwordFocusRequester)
+                    .focusRequester(passwordFocusRequester),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -152,7 +165,8 @@ fun RegisterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .focusRequester(confirmPasswordFocusRequester)
+                    .focusRequester(confirmPasswordFocusRequester),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -212,7 +226,8 @@ fun RegisterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp, horizontal = 16.dp),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = ButtonDefaults.buttonColors(containerColor = primaryGreen)
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -247,7 +262,10 @@ fun RegisterScreen(
                     onClick = onLoginClick,
                     contentPadding = PaddingValues(0.dp)
                 ) {
-                    Text(" Login here", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        " Login here",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = primaryGreen)
+                    )
                 }
             }
         }
