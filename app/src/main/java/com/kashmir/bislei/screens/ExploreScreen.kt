@@ -31,6 +31,10 @@ import com.kashmir.bislei.model.FishingSpot
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.kashmir.bislei.R
+import com.kashmir.bislei.additionals.bitmapDescriptorFromVector
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +54,10 @@ fun ExploreScreen(
             LatLng(34.1106, 74.8683), 12f
         )
     }
+
+    val context = LocalContext.current
+    var iconMarker by remember { mutableStateOf<BitmapDescriptor?>(null) }
+    val mapLoaded = remember { mutableStateOf(false) }
 
     val fishingSpots by fishingSpotsViewModel.fishingSpots.collectAsState()
     val currentLocation by locationViewModel.currentLocation.collectAsState()
@@ -75,6 +83,13 @@ fun ExploreScreen(
             currentLocation?.let {
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 12f)
             }
+        }
+    }
+
+    // Load iconMarker only after map is ready
+    LaunchedEffect(mapLoaded.value) {
+        if (mapLoaded.value && iconMarker == null) {
+            iconMarker = bitmapDescriptorFromVector(context, R.drawable.fishing_marker)
         }
     }
 
@@ -112,21 +127,27 @@ fun ExploreScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(bottom = 80.dp),
-                    cameraPositionState = cameraPositionState
+                    cameraPositionState = cameraPositionState,
+                    onMapLoaded = {
+                        mapLoaded.value = true
+                    }
                 ) {
-                    fishingSpots.forEach { spot ->
-                        Marker(
-                            state = MarkerState(position = LatLng(spot.latitude, spot.longitude)),
-                            title = spot.name,
-                            snippet = spot.description,
-                            onClick = {
-                                selectedSpot = spot
-                                coroutineScope.launch {
-                                    bottomSheetState.show()
+                    if (iconMarker != null) {
+                        fishingSpots.forEach { spot ->
+                            Marker(
+                                state = MarkerState(position = LatLng(spot.latitude, spot.longitude)),
+                                icon = iconMarker ?: BitmapDescriptorFactory.defaultMarker(),
+                                title = spot.name,
+                                snippet = spot.description,
+                                onClick = {
+                                    selectedSpot = spot
+                                    coroutineScope.launch {
+                                        bottomSheetState.show()
+                                    }
+                                    true
                                 }
-                                true
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             } else {
@@ -145,14 +166,12 @@ fun ExploreScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Location Name (add it at the top)
                 Text(
                     text = spot.name,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Location Description
                 Text(
                     text = spot.description,
                     style = MaterialTheme.typography.bodyMedium
@@ -161,22 +180,20 @@ fun ExploreScreen(
 
                 Text(
                     text = "Location Name:",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold) // Bold heading
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                
-                // Location Name
+
                 Text(
                     text = spot.locationName,
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Display Fish Types
                 if (spot.fishTypes.isNotEmpty()) {
                     Text(
                         text = "Fish Types:",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold) // Bold heading
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     spot.fishTypes.forEach { fishType ->
@@ -185,11 +202,10 @@ fun ExploreScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // Display Nearby Locations
                 if (spot.bestFishingLocationsNearby.isNotEmpty()) {
                     Text(
                         text = "Nearby Locations:",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold) // Bold heading
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     spot.bestFishingLocationsNearby.forEach { location ->
@@ -198,7 +214,6 @@ fun ExploreScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                // Display images in a LazyRow
                 if (spot.imageUrls.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier
@@ -221,31 +236,29 @@ fun ExploreScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Directions FAB IconButton
-                val context = LocalContext.current
+
                 FloatingActionButton(
                     onClick = {
-                        // Open Google Maps with directions to the selected fishing spot
-                        val gmmIntentUri = Uri.parse("google.navigation:q=${spot.latitude},${spot.longitude}")
+                        val gmmIntentUri =
+                            Uri.parse("google.navigation:q=${spot.latitude},${spot.longitude}")
                         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
                         mapIntent.setPackage("com.google.android.apps.maps")
-                        context.startActivity(mapIntent) // Using LocalContext to get the context
+                        context.startActivity(mapIntent)
                     },
                     modifier = Modifier
                         .align(Alignment.Start)
-                        .padding(8.dp), // Optional: adds some padding
-                    containerColor = MaterialTheme.colorScheme.primary, // Set the background color for the FAB
-                    contentColor = Color.White // Set the color of the icon inside the FAB
+                        .padding(8.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Directions, // Directions icon
+                        imageVector = Icons.Default.Directions,
                         contentDescription = "Get Directions"
                     )
                 }
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalPermissionsApi::class)

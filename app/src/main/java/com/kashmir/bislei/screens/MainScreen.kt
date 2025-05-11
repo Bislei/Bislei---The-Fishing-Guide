@@ -9,16 +9,16 @@ import com.kashmir.bislei.navigation.BottomNavGraph
 import com.kashmir.bislei.navigation.BottomNavigationBar
 
 @Composable
-fun MainScreen() {
+fun MainScreen(onLogout: () -> Unit) {
     val navController = rememberNavController()
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        }
-    ) { innerPadding ->
+    Scaffold(bottomBar = {
+        BottomNavigationBar(navController = navController)
+    }) { innerPadding ->
         BottomNavGraph(
             navController = navController,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            onLogout = onLogout
+
         )
     }
 }

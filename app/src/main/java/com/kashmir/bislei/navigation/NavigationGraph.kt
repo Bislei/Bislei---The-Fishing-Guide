@@ -58,7 +58,13 @@ fun NavigationGraph(navController: NavHostController, isUserLoggedIn: Boolean) {
 //                    }
 //                }
 //            )
-            MainScreen()
+            MainScreen(
+                onLogout = {
+                    navController.navigate(Screens.Login.route) {
+                        popUpTo(Screens.Home.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Screens.ResetPassword.route) {

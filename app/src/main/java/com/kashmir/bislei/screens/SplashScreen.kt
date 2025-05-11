@@ -40,7 +40,7 @@ fun SplashScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Bislei", style = MaterialTheme.typography.headlineSmall)
-                Text(text = "The Fishing Guide 🎣", style = MaterialTheme.typography.headlineSmall)
+                Text(text = "From Lakes to Likes", style = MaterialTheme.typography.headlineSmall)
             }
         }
     }

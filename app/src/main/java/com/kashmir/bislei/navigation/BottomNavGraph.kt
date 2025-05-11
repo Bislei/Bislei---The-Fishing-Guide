@@ -9,9 +9,13 @@ import com.kashmir.bislei.navigation.screenroutes.BottomNavItem
 import com.kashmir.bislei.screens.*
 
 @Composable
-fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+fun BottomNavGraph(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit
+) {
     NavHost(navController, startDestination = BottomNavItem.Home.route) {
-        composable(BottomNavItem.Home.route) { HomeScreen(onLogout = {}) }
+        composable(BottomNavItem.Home.route) { HomeScreen(onLogout = onLogout) }
         composable(BottomNavItem.Explore.route) { ExploreScreen() }
         composable(BottomNavItem.Identify.route) { /* Identify Fish Screen */ }
         composable(BottomNavItem.Ranking.route) { /* Ranking Screen */ }
