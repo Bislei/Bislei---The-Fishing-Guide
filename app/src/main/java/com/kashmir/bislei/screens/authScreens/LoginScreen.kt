@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
 import androidx.compose.foundation.Image
@@ -24,10 +22,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun LoginScreen(
@@ -48,7 +44,10 @@ fun LoginScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Background SVG image
         Image(
             painter = painterResource(id = R.drawable.colored_skyblue_focus),
             contentDescription = "Background",
@@ -67,11 +66,18 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            Text(
-                text = "Login",
-                style = MaterialTheme.typography.headlineLarge,
-                color =Color(0xFF2E8B57),
-            )
+            // Logo Image
+//            Image(
+//                painter = painterResource(id = R.drawable.ini),
+//                contentDescription = "App Logo",
+//                modifier = Modifier
+//                    .size(500.dp)
+//                    .clip(RoundedCornerShape(16.dp))
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(text = "Login", style = MaterialTheme.typography.headlineLarge)
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -82,16 +88,13 @@ fun LoginScreen(
                 label = { Text("Email") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+                keyboardActions = KeyboardActions(
+                    onNext = { passwordFocusRequester.requestFocus() }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .focusRequester(emailFocusRequester),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF2E8B57),
-                    focusedLabelColor = Color(0xFF2E8B57),
-                    cursorColor = Color(0xFF2E8B57)
-                )
+                    .focusRequester(emailFocusRequester)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -111,20 +114,20 @@ fun LoginScreen(
                     }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                    }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .focusRequester(passwordFocusRequester),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF2E8B57),
-                    focusedLabelColor = Color(0xFF2E8B57),
-                    cursorColor = Color(0xFF2E8B57)
-                )
+                    .focusRequester(passwordFocusRequester)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Login Button
             Button(
                 onClick = {
                     coroutineScope.launch {
@@ -137,21 +140,13 @@ fun LoginScreen(
                         }
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                enabled = !authViewModel.isLoading,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2E8B57),
-                    contentColor = Color.White
-                )
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !authViewModel.isLoading
             ) {
-                Text(
-                    if (authViewModel.isLoading) "Logging in..." else "Login",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold)
-                )
+                Text(if (authViewModel.isLoading) "Logging in..." else "Login")
             }
 
+            // Forgot Password Button
             TextButton(
                 onClick = {
                     if (email.isEmpty()) {
@@ -164,22 +159,24 @@ fun LoginScreen(
                         }
                     }
                     onForgotPassword()
-                },
-                colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF2E8B57))
+                }
             ) {
-                Text("Forgot Password?", style = MaterialTheme.typography.bodyLarge)
+                Text("Forgot Password?")
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Error Message
             if (errorMessage.isNotEmpty()) {
                 Text(text = "Error: $errorMessage", color = MaterialTheme.colorScheme.error)
             }
 
+            // Info Message
             if (infoMessage.isNotEmpty()) {
                 Text(text = infoMessage, color = MaterialTheme.colorScheme.primary)
             }
 
+            // Auth ViewModel Error Message
             if (authViewModel.errorMessage.isNotEmpty()) {
                 Text(
                     text = "Error: ${authViewModel.errorMessage}",
@@ -187,6 +184,7 @@ fun LoginScreen(
                 )
             }
 
+            // After successful login
             if (authViewModel.isLoggedIn) {
                 LaunchedEffect(Unit) {
                     onLoginSuccess()
@@ -195,6 +193,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Register Section
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -211,8 +210,7 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = "Register here",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(0xFF2E8B57)
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }

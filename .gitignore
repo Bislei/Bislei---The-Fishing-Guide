@@ -15,7 +15,7 @@ google-services.json
 
 # API Keys / Custom env files
 .env
-apikeys.properties
+apikey.properties
 
 # IDE & system files
 .idea/
