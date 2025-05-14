@@ -24,8 +24,10 @@ class FishingSpotsViewModel : ViewModel() {
                 .get()
                 .addOnSuccessListener { result ->
                     val spots = result.documents.mapNotNull { it.toObject(FishingSpot::class.java) }
+                        .map { it.copy(hotspotCount = (1..20).random()) } // add dummy hotspot count
                     _fishingSpots.value = spots
                 }
+
                 .addOnFailureListener {
                     // Optional: handle error (log or show toast if needed)
                     _fishingSpots.value = emptyList()

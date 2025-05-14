@@ -79,17 +79,17 @@ dependencies {
     implementation(libs.play.services.maps)
 
     // Compose Runtime & LiveData
-    implementation("androidx.compose.runtime:runtime:1.7.8")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.8")
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.runtime.livedata)
 
     // Maps Compose
-    implementation("com.google.maps.android:maps-compose:6.4.1")
+    implementation(libs.maps.compose.v641)
 
     // Accompanist Permissions
-    implementation("com.google.accompanist:accompanist-permissions:0.24.13-rc")
+    implementation(libs.accompanist.permissions)
 
     // Coil (for image loading)
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
@@ -107,5 +107,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation (libs.material3)
+
+    implementation (libs.play.services.maps.v1700) // or the latest version
+    implementation (libs.play.services.location.v1700) // for location services
 }

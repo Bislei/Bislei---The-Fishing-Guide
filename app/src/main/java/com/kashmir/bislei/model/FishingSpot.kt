@@ -8,6 +8,6 @@ data class FishingSpot(
     val longitude: Double = 0.0,
     val bestFishingLocationsNearby: List<String> = emptyList(),
     val fishTypes: List<String> = emptyList(),
-    val imageUrls: List<String> = emptyList()
+    val imageUrls: List<String> = emptyList(),
+    val hotspotCount: Int = 0 // New field for dummy data
 )
-

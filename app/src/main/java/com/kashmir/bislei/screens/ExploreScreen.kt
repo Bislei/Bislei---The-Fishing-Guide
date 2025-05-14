@@ -3,8 +3,9 @@ package com.kashmir.bislei.screens
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -17,31 +18,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.permissions.*
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
-import com.kashmir.bislei.viewmodel.FishingSpotsViewModel
-import com.kashmir.bislei.viewmodel.LocationViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.kashmir.bislei.additionals.CustomMarkerWithBadge
 import com.kashmir.bislei.model.FishingSpot
+import com.kashmir.bislei.viewModels.LocationViewModel
+import com.kashmir.bislei.viewmodel.FishingSpotsViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.kashmir.bislei.R
-import com.kashmir.bislei.additionals.bitmapDescriptorFromVector
+import com.kashmir.bislei.components.MarkerInfoCard
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ExploreScreen(
     fishingSpotsViewModel: FishingSpotsViewModel = viewModel(),
-    locationViewModel: LocationViewModel = viewModel()
+    locationViewModel: LocationViewModel = viewModel(),
+    onIdentifyFishClick: (LatLng) -> Unit = {} // Placeholder to avoid compilation errors
 ) {
+    val context = LocalContext.current
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -50,21 +57,26 @@ fun ExploreScreen(
     )
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(
-            LatLng(34.1106, 74.8683), 12f
-        )
+        position = CameraPosition.fromLatLngZoom(LatLng(34.1106, 74.8683), 12f)
     }
 
-    val context = LocalContext.current
-    var iconMarker by remember { mutableStateOf<BitmapDescriptor?>(null) }
-    val mapLoaded = remember { mutableStateOf(false) }
+    // This effect will trigger whenever the camera position changes
+    LaunchedEffect(cameraPositionState.position) {
+        // This forces a recomposition when the camera moves
+        // which will update the position of any displayed card
+    }
 
     val fishingSpots by fishingSpotsViewModel.fishingSpots.collectAsState()
     val currentLocation by locationViewModel.currentLocation.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-
     var selectedSpot by remember { mutableStateOf<FishingSpot?>(null) }
+    var showCard by remember { mutableStateOf(true) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // New state to track whether to show the bottom sheet
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    var isMapLoaded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
@@ -73,54 +85,30 @@ fun ExploreScreen(
         }
     }
 
-    LaunchedEffect(fishingSpots) {
-        if (fishingSpots.isNotEmpty()) {
-            val firstSpot = fishingSpots.first()
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                LatLng(firstSpot.latitude, firstSpot.longitude), 12f
-            )
-        } else {
-            currentLocation?.let {
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 12f)
-            }
-        }
-    }
-
-    // Load iconMarker only after map is ready
-    LaunchedEffect(mapLoaded.value) {
-        if (mapLoaded.value && iconMarker == null) {
-            iconMarker = bitmapDescriptorFromVector(context, R.drawable.fishing_marker)
-        }
-    }
-
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             if (permissionsState.allPermissionsGranted) {
                 FloatingActionButton(
                     onClick = {
                         currentLocation?.let {
-                            Log.d("FAB_DEBUG", "FAB clicked, moving to current location")
                             coroutineScope.launch {
                                 cameraPositionState.animate(
-                                    update = CameraUpdateFactory.newLatLngZoom(it, 15f)
+                                    CameraUpdateFactory.newLatLngZoom(it, 15f)
                                 )
                             }
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White,
-                    modifier = Modifier.padding(bottom = 170.dp)
+                    containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.MyLocation, contentDescription = "My Location")
                 }
             }
         }
-    ) { innerPadding ->
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
         ) {
             if (permissionsState.allPermissionsGranted) {
                 GoogleMap(
@@ -128,25 +116,64 @@ fun ExploreScreen(
                         .fillMaxSize()
                         .padding(bottom = 80.dp),
                     cameraPositionState = cameraPositionState,
-                    onMapLoaded = {
-                        mapLoaded.value = true
-                    }
+                    onMapLoaded = { isMapLoaded = true }
                 ) {
-                    if (iconMarker != null) {
-                        fishingSpots.forEach { spot ->
-                            Marker(
-                                state = MarkerState(position = LatLng(spot.latitude, spot.longitude)),
-                                icon = iconMarker ?: BitmapDescriptorFactory.defaultMarker(),
-                                title = spot.name,
-                                snippet = spot.description,
-                                onClick = {
-                                    selectedSpot = spot
-                                    coroutineScope.launch {
-                                        bottomSheetState.show()
-                                    }
-                                    true
+                    fishingSpots.forEach { spot ->
+                        CustomMarkerWithBadge(
+                            spot = spot,
+                            onClick = {
+                                selectedSpot = spot
+                                showCard = true // reset card visibility
+                                showBottomSheet = false
+                            },
+                            onIdentifyFishClick = onIdentifyFishClick
+                        )
+                    }
+                }
+
+                // Only show additional marker info if map is loaded and a spot is selected
+                if (isMapLoaded && selectedSpot != null) {
+                    // Create a key that depends on the camera position to force recomposition
+                    val cameraKey = cameraPositionState.position.toString()
+
+                    // Add null safety check for projection
+                    cameraPositionState.projection?.let { safeProjection ->
+                        val latLng = LatLng(selectedSpot!!.latitude, selectedSpot!!.longitude)
+                        val screenPosition = safeProjection.toScreenLocation(latLng)
+
+                        // Only show the card if the marker is currently visible on screen
+                        val visibleRegion = safeProjection.visibleRegion.latLngBounds
+
+
+                        if (visibleRegion.contains(latLng)) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp)
+                            ) {
+                                // Google Maps style info card directly above the marker
+                                if (showCard) {
+                                    MarkerInfoCard(
+                                        name = selectedSpot!!.name,
+                                        location = selectedSpot!!.locationName,
+                                        hotspotCount = selectedSpot!!.hotspotCount,
+                                        modifier = Modifier.offset {
+                                            IntOffset(
+                                                screenPosition.x - 462,
+                                                screenPosition.y - 510
+                                            )
+                                        },
+                                        onClick = {
+                                            showBottomSheet = true
+                                            coroutineScope.launch {
+                                                bottomSheetState.show()
+                                            }
+                                        },
+                                        onDismiss = { showCard = false }
+                                    )
                                 }
-                            )
+
+                            }
                         }
                     }
                 }
@@ -154,107 +181,71 @@ fun ExploreScreen(
                 PermissionDeniedUI(permissionsState)
             }
         }
-    }
 
-    selectedSpot?.let { spot ->
-        ModalBottomSheet(
-            onDismissRequest = { selectedSpot = null },
-            sheetState = bottomSheetState
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+        // Show bottom sheet only if a spot is selected AND showBottomSheet is true
+        if (selectedSpot != null && showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    // Only hide the bottom sheet, keep the card visible
+                    showBottomSheet = false
+                },
+                sheetState = bottomSheetState
             ) {
-                Text(
-                    text = spot.name,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = spot.description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Location Name:",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = spot.locationName,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (spot.fishTypes.isNotEmpty()) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Fish Types:",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                        selectedSpot!!.name,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    spot.fishTypes.forEach { fishType ->
-                        Text(text = "• $fishType", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                    Text(selectedSpot!!.description, modifier = Modifier.padding(vertical = 4.dp))
 
-                if (spot.bestFishingLocationsNearby.isNotEmpty()) {
-                    Text(
-                        text = "Nearby Locations:",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    spot.bestFishingLocationsNearby.forEach { location ->
-                        Text(text = "• $location", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                    Text("Location:", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                    Text(selectedSpot!!.locationName, modifier = Modifier.padding(bottom = 4.dp))
 
-                if (spot.imageUrls.isNotEmpty()) {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(spot.imageUrls) { imageUrl ->
-                            Image(
-                                painter = rememberAsyncImagePainter(imageUrl),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .width(300.dp)
-                                    .fillMaxHeight(),
-                                contentScale = ContentScale.Crop
-                            )
+                    if (selectedSpot!!.fishTypes.isNotEmpty()) {
+                        Text("Fish Types:", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        selectedSpot!!.fishTypes.forEach {
+                            Text("- $it")
                         }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    if (selectedSpot!!.bestFishingLocationsNearby.isNotEmpty()) {
+                        Text("Nearby Fishing Locations:", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                        selectedSpot!!.bestFishingLocationsNearby.forEach {
+                            Text("- $it")
+                        }
+                    }
 
+                    if (selectedSpot!!.imageUrls.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LazyRow {
+                            items(selectedSpot!!.imageUrls) { url ->
+                                Image(
+                                    painter = rememberAsyncImagePainter(url),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(200.dp)
+                                        .padding(end = 8.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                    }
 
-                FloatingActionButton(
-                    onClick = {
-                        val gmmIntentUri =
-                            Uri.parse("google.navigation:q=${spot.latitude},${spot.longitude}")
-                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                        mapIntent.setPackage("com.google.android.apps.maps")
-                        context.startActivity(mapIntent)
-                    },
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .padding(8.dp),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Directions,
-                        contentDescription = "Get Directions"
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FloatingActionButton(
+                        onClick = {
+                            val gmmIntentUri =
+                                Uri.parse("google.navigation:q=${selectedSpot!!.latitude},${selectedSpot!!.longitude}")
+                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                            mapIntent.setPackage("com.google.android.apps.maps")
+                            context.startActivity(mapIntent)
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Icon(Icons.Default.Directions, contentDescription = "Directions")
+                    }
                 }
             }
         }
