@@ -13,8 +13,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
-
 private val darkColorScheme = AppColorScheme(
     background = bgDark,
     onBackground = Purple80,
