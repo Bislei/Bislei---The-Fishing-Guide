@@ -40,6 +40,7 @@ import com.kashmir.bislei.viewModels.LocationViewModel
 import com.kashmir.bislei.viewmodel.FishingSpotsViewModel
 import kotlinx.coroutines.launch
 import com.kashmir.bislei.components.MarkerInfoCard
+import com.kashmir.bislei.ui.theme.AppTheme
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -98,7 +99,7 @@ fun ExploreScreen(
                             }
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = AppTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.MyLocation, contentDescription = "My Location")
                 }

@@ -1,16 +1,31 @@
 package com.kashmir.bislei.screens.authScreens
 
 import android.util.Patterns
+import androidx.compose.foundation.background
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.kashmir.bislei.R
 import com.kashmir.bislei.viewModels.AuthViewModel
 import kotlinx.coroutines.launch
+import com.airbnb.lottie.compose.*
+import com.kashmir.bislei.ui.theme.AppTheme
+import com.kashmir.bislei.ui.theme.Poppins
 
 @Composable
 fun RegisterScreen(
@@ -27,9 +42,18 @@ fun RegisterScreen(
     var localErrorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
+    // Load Lottie animation
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.fish_login))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        isPlaying = true,
+        iterations = LottieConstants.IterateForever
+    )
+
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize().background(AppTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -37,39 +61,134 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Register", style = MaterialTheme.typography.headlineLarge)
+            // Lottie Animation
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(bottom = 3.dp)
+            )
+
+            Text(
+                text = "Register",
+                color = AppTheme.colorScheme.primary,
+                fontSize = 30.sp,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.SemiBold,
+            )
             Spacer(modifier = Modifier.height(20.dp))
 
-            OutlinedTextField(value = name,
+            OutlinedTextField(
+                value = name,
                 onValueChange = { name = it },
-                label = { Text("Full Name") }
+                label = {
+                    Text(
+                        "Full Name",
+                        color = AppTheme.colorScheme.primary,
+                        fontFamily = Poppins
+                    )
+                },
+                textStyle = TextStyle(color = AppTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedLabelColor = Color.Unspecified,
+                    unfocusedLabelColor = Color.Gray,
+                    focusedBorderColor = AppTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    errorBorderColor = Color.Red // Outline color when isError = true
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(value = phone,
+            OutlinedTextField(
+                value = phone,
                 onValueChange = { phone = it },
-                label = { Text("Phone") }
+                label = {
+                    Text(
+                        "Phone",
+                        color = AppTheme.colorScheme.primary,
+                        fontFamily = Poppins
+                    )
+                },
+                textStyle = TextStyle(color = AppTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedLabelColor = Color.Unspecified,
+                    unfocusedLabelColor = Color.Gray,
+                    focusedBorderColor = AppTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    errorBorderColor = Color.Red // Outline color when isError = true
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") }
+                label = {
+                    Text(
+                        "Email",
+                        color = AppTheme.colorScheme.primary,
+                        fontFamily = Poppins
+                    )
+                },
+                textStyle = TextStyle(color = AppTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedLabelColor = Color.Unspecified,
+                    unfocusedLabelColor = Color.Gray,
+                    focusedBorderColor = AppTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    errorBorderColor = Color.Red // Outline color when isError = true
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") }
+                label = {
+                    Text(
+                        "Password",
+                        color = AppTheme.colorScheme.primary,
+                        fontFamily = Poppins
+                    )
+                },
+                textStyle = TextStyle(color = AppTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AppTheme.colorScheme.primary,
+                    unfocusedBorderColor = AppTheme.colorScheme.primary,
+                    errorBorderColor = Color.Red // Outline color when isError = true
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") }
+                label = {
+                    Text(
+                        "Confirm Password",
+                        color = AppTheme.colorScheme.primary,
+                        fontFamily = Poppins
+                    )
+                },
+                textStyle = TextStyle(color = AppTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedLabelColor = Color.Unspecified,
+                    unfocusedLabelColor = Color.Gray,
+                    focusedBorderColor = AppTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    errorBorderColor = Color.Red // Outline color when isError = true
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -130,6 +249,10 @@ fun RegisterScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppTheme.colorScheme.primary,
+                    contentColor = AppTheme.colorScheme.onPrimary
+                ),
                 enabled = !isLoading
             ) {
                 if (isLoading) {
@@ -140,16 +263,26 @@ fun RegisterScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
-                Text("Register")
+                Text(
+                    text = "Register",
+                    fontFamily = Poppins,
+//                    fontWeight = FontWeight.Bold,
+                    color = AppTheme.colorScheme.background,
+                    fontSize = 16.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Success state
-            if (authViewModel.errorMessage.contains("Please verify your email", ignoreCase = true)) {
+            if (authViewModel.errorMessage.contains(
+                    "Please verify your email",
+                    ignoreCase = true
+                )
+            ) {
                 Text(
                     text = "Registration successful! Please verify your email.",
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -158,8 +291,20 @@ fun RegisterScreen(
             }
 
             //Back to login
-            TextButton(onClick = onLoginClick) {
-                Text("Already have an account? Login here")
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .offset(y = (-20).dp), // Pull closer by 20dp
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+                TextButton(onClick = onLoginClick)
+                {
+                    Text(
+                        "Already have an account? Login here",
+                        color=(AppTheme.colorScheme.primary), fontSize = 17.sp)
+                }
             }
         }
     }

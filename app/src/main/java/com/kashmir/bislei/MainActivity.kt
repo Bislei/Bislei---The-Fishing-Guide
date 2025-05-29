@@ -6,10 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.core.content.pm.ShortcutInfoCompat.Surface
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.kashmir.bislei.navigation.NavigationGraph
-import com.kashmir.bislei.ui.theme.BisleiTheme
+import com.kashmir.bislei.ui.theme.AppTheme
+//import com.kashmir.bislei.ui.theme.BisleiTheme
 
 // Development Flow of the App:->
 
@@ -30,7 +32,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BisleiTheme {
+           AppTheme() {
+
                 val navController = rememberNavController()
 
                 // Check if user is already logged in and verified

@@ -111,4 +111,7 @@ dependencies {
 
     implementation (libs.play.services.maps.v1700) // or the latest version
     implementation (libs.play.services.location.v1700) // for location services
+
+    //Lottie Animation Implementation here
+    implementation ("com.airbnb.android:lottie-compose:6.6.6")
 }
